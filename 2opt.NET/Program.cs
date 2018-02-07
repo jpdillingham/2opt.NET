@@ -24,7 +24,7 @@ namespace _2opt.NET
 
             string originalSQL = Utility.GetSQL(Points);
 
-            int maxIterations = (int)Math.Pow(PointCount, 3) + 1; // double check this
+            int maxIterations = (int)Math.Pow(PointCount, 3) + 100; // double check this
 
             while (maxIterations > 0)
             {
@@ -53,7 +53,7 @@ namespace _2opt.NET
 
         private static List<Point> MutateIntersectingLines(List<Point> points, List<Tuple<Line, Line>> intersectingLines)
         {
-            Console.WriteLine("\nChoosing random line pair and mutating...");
+            //Console.WriteLine("\nChoosing random line pair and mutating...");
             var pairIndex = rng.Next(intersectingLines.Count);
 
             Tuple<Line, Line> pair = intersectingLines[pairIndex];
@@ -78,7 +78,7 @@ namespace _2opt.NET
 
         private static List<Tuple<Line, Line>> GetIntersectingLines(List<Line> lines)
         {
-            Console.WriteLine("\nChecking for intersecting lines...");
+            //Console.WriteLine("\nChecking for intersecting lines...");
 
             var intersectingLines = new List<Tuple<Line, Line>>();
 
@@ -97,7 +97,7 @@ namespace _2opt.NET
                         var intersectingPair = new Tuple<Line, Line>(Lines[i], Lines[j]);
                         intersectingLines.Add(intersectingPair);
 
-                        Console.WriteLine($"Intersecting lines: {Lines[i]} {Lines[j]}");
+                        //Console.WriteLine($"Intersecting lines: {Lines[i]} {Lines[j]}");
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace _2opt.NET
 
         private static List<Point> GetRandomizedPoints(int count, int xlim, int ylim)
         {
-            Console.WriteLine($"Generating polygon with {count} points and bounded size ({xlim}, {ylim})\n");
+            //Console.WriteLine($"Generating polygon with {count} points and bounded size ({xlim}, {ylim})\n");
 
             var points = new List<Point>();
 
@@ -123,7 +123,7 @@ namespace _2opt.NET
 
                 points.Add(point);
 
-                Console.WriteLine($"Added point {point}");
+                //Console.WriteLine($"Added point {point}");
             }
 
             return points;
@@ -142,7 +142,7 @@ namespace _2opt.NET
 
                 lines.Add(line);
 
-                Console.WriteLine($"Added line {line}");
+                //Console.WriteLine($"Added line {line}");
             }
 
             return lines;
