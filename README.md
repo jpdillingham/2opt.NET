@@ -5,3 +5,5 @@ A simple test application that generates an N-point polygon consisting of random
 ## Output
 
 Produces spatial SQL queries, allowing the original and 2-opted polygon to be plotted in SQL Server Management Studio (paste into a query window and execute, then flip to the Spatial Results tab).
+
+![doc/result.png](doc/result.png)
