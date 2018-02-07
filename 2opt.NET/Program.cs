@@ -14,11 +14,13 @@ namespace _2opt.NET
         private static List<Point> Points { get; set; }
         private static List<Line> Lines { get; set; }
 
+        private static List<Tuple<Line, Line>> IntersectingLines { get; set; }
+
         static void Main(string[] args)
         {
             ParseArgs(args);
 
-            Console.WriteLine($"Generating polygon with {PointCount} points and bounded size ({XLim}, {YLim})");
+            Console.WriteLine($"Generating polygon with {PointCount} points and bounded size ({XLim}, {YLim})\n");
 
             Points = new List<Point>();
 
@@ -35,7 +37,7 @@ namespace _2opt.NET
                 Console.WriteLine($"Added point {point}");
             }
 
-            Console.WriteLine($"Un-2opted SQL: {Utility.GetSQL(Points)}");
+            Console.WriteLine($"\nUn-2opted SQL: {Utility.GetSQL(Points)}\n");
 
             Lines = new List<Line>();
 
@@ -49,6 +51,43 @@ namespace _2opt.NET
                 Lines.Add(line);
 
                 Console.WriteLine($"Added line {line}");
+            }
+
+            Console.WriteLine("\nChecking for intersecting lines...");
+
+            IntersectingLines = new List<Tuple<Line, Line>>();
+
+            for (int i = 0; i < Lines.Count; i++)
+            {
+                for (int j = i + 1; j < Lines.Count; j++)
+                {
+
+                    if (Lines[i].Points[0] == Lines[j].Points[0] || Lines[i].Points[0] == Lines[j].Points[1] || Lines[i].Points[1] == Lines[j].Points[0] || Lines[i].Points[1] == Lines[j].Points[1])
+                    {
+                        continue;
+                    }
+
+                    if (Utility.LineSegementsIntersect(Lines[i].Points[0], Lines[i].Points[1], Lines[j].Points[0], Lines[j].Points[1]))
+                    {
+                        var intersectingLines = new Tuple<Line, Line>(Lines[i], Lines[j]);
+                        IntersectingLines.Add(intersectingLines);
+
+                        Console.WriteLine($"Intersecting lines: {Lines[i]} {Lines[j]}");
+                    }
+                }
+            }
+
+            Console.WriteLine($"\n{IntersectingLines.Count} intersecting line pair(s) found.");
+
+            if (IntersectingLines.Count > 0)
+            {
+                Console.WriteLine("\nChoosing random line pair and mutating...");
+
+                // do stuff
+            }
+            else
+            {
+                Console.WriteLine("Done!");
             }
         }
         

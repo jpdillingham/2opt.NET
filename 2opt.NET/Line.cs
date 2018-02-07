@@ -13,6 +13,12 @@ namespace _2opt.NET
             Points = new Point[2];
         }
 
+        public override bool Equals(object obj)
+        {
+            var p = (Line)obj;
+            return p.Points[0] == Points[0] && p.Points[1] == Points[1];
+        }
+
         public override string ToString()
         {
             return $"{Points[0]} {Points[1]}";

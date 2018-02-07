@@ -53,10 +53,8 @@ namespace _2opt.NET
         /// </param>
         /// <returns>True if an intersection point was found.</returns>
         public static bool LineSegementsIntersect(Point p, Point p2, Point q, Point q2,
-            out Point intersection, bool considerCollinearOverlapAsIntersect = false)
+            bool considerCollinearOverlapAsIntersect = false)
         {
-            intersection = new Point();
-
             var r = p2 - p;
             var s = q2 - q;
             var rxs = r.Cross(s);
@@ -92,9 +90,6 @@ namespace _2opt.NET
             // the two line segments meet at the point p + t r = q + u s.
             if (!rxs.IsZero() && (0 <= t && t <= 1) && (0 <= u && u <= 1))
             {
-                // We can calculate the intersection point using either t or u.
-                intersection = p + t * r;
-
                 // An intersection was found.
                 return true;
             }
