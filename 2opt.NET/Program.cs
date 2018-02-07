@@ -12,6 +12,7 @@ namespace _2opt.NET
         private static int YLim = 10;
     
         private static List<Point> Points { get; set; }
+        private static List<Line> Lines { get; set; }
 
         static void Main(string[] args)
         {
@@ -35,6 +36,20 @@ namespace _2opt.NET
             }
 
             Console.WriteLine($"Un-2opted SQL: {GetSQL(Points)}");
+
+            Lines = new List<Line>();
+
+            for (int i = 0; i < Points.Count; i++)
+            {
+                var line = new Line()
+                {
+                    Points = new[] { Points[i], Points[i + 1 == Points.Count ? 0 : i + 1] }
+                };
+
+                Lines.Add(line);
+
+                Console.WriteLine($"Added line {line}");
+            }
         }
 
         private static string GetSQL(List<Point> points)
