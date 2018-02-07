@@ -20,75 +20,132 @@ namespace _2opt.NET
         {
             ParseArgs(args);
 
-            Console.WriteLine($"Generating polygon with {PointCount} points and bounded size ({XLim}, {YLim})\n");
+            Points = GetRandomizedPoints(PointCount, XLim, YLim);
 
-            Points = new List<Point>();
+            string originalSQL = Utility.GetSQL(Points);
 
-            for (int i = 0; i < PointCount; i++)
+            int maxIterations = (int)Math.Pow(PointCount, 3) + 1; // double check this
+
+            while (maxIterations > 0)
             {
-                var point = new Point()
+                Lines = GetLinesFromPoints(Points);
+                IntersectingLines = GetIntersectingLines(Lines);
+
+                if (IntersectingLines.Count == 0)
                 {
-                    X = rng.NextDouble() * XLim,
-                    Y = rng.NextDouble() * YLim,
-                };
+                    break;
+                }
 
-                Points.Add(point);
-
-                Console.WriteLine($"Added point {point}");
+                Points = MutateIntersectingLines(Points, IntersectingLines);
+                maxIterations--;
             }
 
-            Console.WriteLine($"\nUn-2opted SQL: {Utility.GetSQL(Points)}\n");
-
-            Lines = new List<Line>();
-
-            for (int i = 0; i < Points.Count; i++)
+            if (maxIterations == 0)
             {
-                var line = new Line()
+                Console.WriteLine("\nOperation broke; maximum number of iterations reached.");
+            }
+            else
+            {
+                Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
+                Console.WriteLine("\nDone!");
+            }
+        }
+
+        private static List<Point> MutateIntersectingLines(List<Point> points, List<Tuple<Line, Line>> intersectingLines)
+        {
+            Console.WriteLine("\nChoosing random line pair and mutating...");
+            var pairIndex = rng.Next(intersectingLines.Count);
+
+            Tuple<Line, Line> pair = intersectingLines[pairIndex];
+
+            Point left = pair.Item1.Points[0];
+            Point right = pair.Item2.Points[1];
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (points[i] == left)
                 {
-                    Points = new[] { Points[i], Points[i + 1 == Points.Count ? 0 : i + 1] }
-                };
-
-                Lines.Add(line);
-
-                Console.WriteLine($"Added line {line}");
+                    points[i] = right;
+                }
+                else if (points[i] == right)
+                {
+                    points[i] = left;
+                }
             }
 
+            return points;
+        }
+
+        private static List<Tuple<Line, Line>> GetIntersectingLines(List<Line> lines)
+        {
             Console.WriteLine("\nChecking for intersecting lines...");
 
-            IntersectingLines = new List<Tuple<Line, Line>>();
+            var intersectingLines = new List<Tuple<Line, Line>>();
 
-            for (int i = 0; i < Lines.Count; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
-                for (int j = i + 1; j < Lines.Count; j++)
+                for (int j = i + 1; j < lines.Count; j++)
                 {
 
-                    if (Lines[i].Points[0] == Lines[j].Points[0] || Lines[i].Points[0] == Lines[j].Points[1] || Lines[i].Points[1] == Lines[j].Points[0] || Lines[i].Points[1] == Lines[j].Points[1])
+                    if (lines[i].Points[0] == lines[j].Points[0] || lines[i].Points[0] == lines[j].Points[1] || lines[i].Points[1] == lines[j].Points[0] || lines[i].Points[1] == lines[j].Points[1])
                     {
                         continue;
                     }
 
                     if (Utility.LineSegementsIntersect(Lines[i].Points[0], Lines[i].Points[1], Lines[j].Points[0], Lines[j].Points[1]))
                     {
-                        var intersectingLines = new Tuple<Line, Line>(Lines[i], Lines[j]);
-                        IntersectingLines.Add(intersectingLines);
+                        var intersectingPair = new Tuple<Line, Line>(Lines[i], Lines[j]);
+                        intersectingLines.Add(intersectingPair);
 
                         Console.WriteLine($"Intersecting lines: {Lines[i]} {Lines[j]}");
                     }
                 }
             }
 
-            Console.WriteLine($"\n{IntersectingLines.Count} intersecting line pair(s) found.");
+            Console.WriteLine($"\n{intersectingLines.Count} intersecting line pair(s) found.");
 
-            if (IntersectingLines.Count > 0)
-            {
-                Console.WriteLine("\nChoosing random line pair and mutating...");
+            return intersectingLines;
+        }
 
-                // do stuff
-            }
-            else
+        private static List<Point> GetRandomizedPoints(int count, int xlim, int ylim)
+        {
+            Console.WriteLine($"Generating polygon with {count} points and bounded size ({xlim}, {ylim})\n");
+
+            var points = new List<Point>();
+
+            for (int i = 0; i < count; i++)
             {
-                Console.WriteLine("Done!");
+                var point = new Point()
+                {
+                    X = rng.NextDouble() * xlim,
+                    Y = rng.NextDouble() * ylim,
+                };
+
+                points.Add(point);
+
+                Console.WriteLine($"Added point {point}");
             }
+
+            return points;
+        }
+
+        private static List<Line> GetLinesFromPoints(List<Point> points)
+        {
+            var lines = new List<Line>();
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                var line = new Line()
+                {
+                    Points = new[] { points[i], points[i + 1 == points.Count ? 0 : i + 1] }
+                };
+
+                lines.Add(line);
+
+                Console.WriteLine($"Added line {line}");
+            }
+
+            return lines;
         }
         
         private static void ParseArgs(string[] args)
