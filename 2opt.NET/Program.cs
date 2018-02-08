@@ -7,9 +7,14 @@ namespace _2opt.NET
     {
         private static Random rng = new Random();
 
-        private static int PointCount = 5;
-        private static int XLim = 10;
-        private static int YLim = 10;
+        private static int pointCount = 5;
+        private static int xLim = 10;
+        private static int yLim = 10;
+        private static int maxUnproductiveIterations = 1000;
+
+        private static int previousIntersectionCount = 0;
+        private static int unproductiveIterationCount = 0;
+        private static int iterationCount = 0;
     
         private static List<Point> Points { get; set; }
         private static List<Line> Lines { get; set; }
@@ -20,34 +25,39 @@ namespace _2opt.NET
         {
             ParseArgs(args);
 
-            Points = GetRandomizedPoints(PointCount, XLim, YLim);
+            Points = GetRandomizedPoints(pointCount, xLim, yLim);
 
             string originalSQL = Utility.GetSQL(Points);
 
-            int maxIterations = (int)Math.Pow(PointCount, 3) + 100; // double check this
-
-            while (maxIterations > 0)
+            while (true)
             {
                 Lines = GetLinesFromPoints(Points);
                 IntersectingLines = GetIntersectingLines(Lines);
-
-                if (IntersectingLines.Count == 0)
+                
+                if (IntersectingLines.Count == 0 || unproductiveIterationCount > maxUnproductiveIterations)
                 {
                     break;
                 }
 
+                if (IntersectingLines.Count >= previousIntersectionCount)
+                {
+                    unproductiveIterationCount++;
+                }
+
+                previousIntersectionCount = IntersectingLines.Count;
+                iterationCount++;
+
                 Points = MutateIntersectingLines(Points, IntersectingLines);
-                maxIterations--;
             }
 
-            if (maxIterations == 0)
+            if (IntersectingLines.Count > 0)
             {
-                Console.WriteLine("\nOperation broke; maximum number of iterations reached.");
+                Console.WriteLine("\nUnable to remove all intersections.");
             }
             else
             {
                 Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
-                Console.WriteLine("\nDone!");
+                Console.WriteLine($"\nDone! Completed in {iterationCount} iterations.");
             }
         }
 
@@ -78,15 +88,12 @@ namespace _2opt.NET
 
         private static List<Tuple<Line, Line>> GetIntersectingLines(List<Line> lines)
         {
-            //Console.WriteLine("\nChecking for intersecting lines...");
-
             var intersectingLines = new List<Tuple<Line, Line>>();
 
             for (int i = 0; i < lines.Count; i++)
             {
                 for (int j = i + 1; j < lines.Count; j++)
                 {
-
                     if (lines[i].Points[0] == lines[j].Points[0] || lines[i].Points[0] == lines[j].Points[1] || lines[i].Points[1] == lines[j].Points[0] || lines[i].Points[1] == lines[j].Points[1])
                     {
                         continue;
@@ -96,21 +103,17 @@ namespace _2opt.NET
                     {
                         var intersectingPair = new Tuple<Line, Line>(Lines[i], Lines[j]);
                         intersectingLines.Add(intersectingPair);
-
-                        //Console.WriteLine($"Intersecting lines: {Lines[i]} {Lines[j]}");
                     }
                 }
             }
 
-            Console.WriteLine($"\n{intersectingLines.Count} intersecting line pair(s) found.");
+            Console.WriteLine($"{intersectingLines.Count} intersecting line pair(s) found.");
 
             return intersectingLines;
         }
 
         private static List<Point> GetRandomizedPoints(int count, int xlim, int ylim)
         {
-            //Console.WriteLine($"Generating polygon with {count} points and bounded size ({xlim}, {ylim})\n");
-
             var points = new List<Point>();
 
             for (int i = 0; i < count; i++)
@@ -122,8 +125,6 @@ namespace _2opt.NET
                 };
 
                 points.Add(point);
-
-                //Console.WriteLine($"Added point {point}");
             }
 
             return points;
@@ -141,8 +142,6 @@ namespace _2opt.NET
                 };
 
                 lines.Add(line);
-
-                //Console.WriteLine($"Added line {line}");
             }
 
             return lines;
@@ -150,9 +149,9 @@ namespace _2opt.NET
         
         private static void ParseArgs(string[] args)
         {
-            Utility.ParseArg(args, 0, out PointCount, nameof(PointCount), 5);
-            Utility.ParseArg(args, 1, out XLim, nameof(XLim), 10);
-            Utility.ParseArg(args, 2, out YLim, nameof(YLim), 10);
+            Utility.ParseArg(args, 0, out pointCount, nameof(pointCount), 5);
+            Utility.ParseArg(args, 1, out xLim, nameof(xLim), 10);
+            Utility.ParseArg(args, 2, out yLim, nameof(yLim), 10);
         }
     }
 }
