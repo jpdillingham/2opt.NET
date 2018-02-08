@@ -52,18 +52,18 @@ namespace _2opt.NET
 
             if (IntersectingLines.Count > 0)
             {
-                Console.WriteLine("\nUnable to remove all intersections.");
+                Console.WriteLine($"Unable to remove all intersections after {iterationCount} iterations.");
             }
             else
             {
-                Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
-                Console.WriteLine($"\nDone! Completed in {iterationCount} iterations.");
+                Console.WriteLine($"Intersections removed! Completed in {iterationCount} iterations.");
             }
+
+            Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
         }
 
         private static List<Point> MutateIntersectingLines(List<Point> points, List<Tuple<Line, Line>> intersectingLines)
         {
-            //Console.WriteLine("\nChoosing random line pair and mutating...");
             var pairIndex = rng.Next(intersectingLines.Count);
 
             Tuple<Line, Line> pair = intersectingLines[pairIndex];
@@ -106,8 +106,6 @@ namespace _2opt.NET
                     }
                 }
             }
-
-            Console.WriteLine($"{intersectingLines.Count} intersecting line pair(s) found.");
 
             return intersectingLines;
         }
@@ -152,6 +150,7 @@ namespace _2opt.NET
             Utility.ParseArg(args, 0, out pointCount, nameof(pointCount), 5);
             Utility.ParseArg(args, 1, out xLim, nameof(xLim), 10);
             Utility.ParseArg(args, 2, out yLim, nameof(yLim), 10);
+            Utility.ParseArg(args, 3, out maxUnproductiveIterations, nameof(maxUnproductiveIterations), 1000);
         }
     }
 }
