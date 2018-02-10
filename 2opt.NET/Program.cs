@@ -52,11 +52,11 @@ namespace _2opt.NET
 
             if (IntersectingLines.Count > 0)
             {
-                Console.WriteLine($"Unable to remove all intersections after {iterationCount} iterations.");
+                Console.WriteLine($"\nUnable to remove all intersections after {iterationCount} iterations.");
             }
             else
             {
-                Console.WriteLine($"Intersections removed! Completed in {iterationCount} iterations.");
+                Console.WriteLine($"\nIntersections removed! Completed in {iterationCount} iterations.");
             }
 
             Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
@@ -114,7 +114,7 @@ namespace _2opt.NET
         {
             var points = new List<Point>();
 
-            for (int i = 0; i < count; i++)
+            while (points.Count < count)
             {
                 var point = new Point()
                 {
@@ -122,7 +122,10 @@ namespace _2opt.NET
                     Y = rng.NextDouble() * ylim,
                 };
 
-                points.Add(point);
+                if (!points.Contains(point))
+                {
+                    points.Add(point);
+                }
             }
 
             return points;
