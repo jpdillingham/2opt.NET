@@ -56,7 +56,7 @@ namespace _2opt.NET
             }
             else
             {
-                Console.WriteLine($"\nIntersections removed! Completed in {iterationCount} iterations.");
+                Console.WriteLine($"\nIntersections removed! Completed in {iterationCount} iteration(s).");
             }
 
             Console.WriteLine($"\n{originalSQL}\n{Utility.GetSQL(Points)}\n");
