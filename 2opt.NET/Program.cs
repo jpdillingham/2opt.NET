@@ -93,11 +93,14 @@ namespace _2opt.NET
             Points = GetRandomizedPoints(pointCount, xLim, yLim);
 
             string originalSQL = Utility.GetSQL(Points);
+            Console.WriteLine($"\nOriginal polygon: {originalSQL}\n");
 
             while (true)
             {
                 Lines = GetLinesFromPoints(Points);
                 IntersectingLines = GetIntersectingLines(Lines);
+
+                Console.WriteLine($"There are {IntersectingLines.Count} intersecting line pair(s).\n");
 
                 if (IntersectingLines.Count == 0)
                 {
