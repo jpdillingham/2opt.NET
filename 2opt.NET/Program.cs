@@ -34,7 +34,7 @@ namespace _2opt.NET
                 Lines = GetLinesFromPoints(Points);
                 IntersectingLines = GetIntersectingLines(Lines);
                 
-                if (IntersectingLines.Count == 0 || unproductiveIterationCount > maxUnproductiveIterations)
+                if (IntersectingLines.Count == 0)
                 {
                     break;
                 }
