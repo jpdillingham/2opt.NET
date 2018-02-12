@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace _2opt.NET
 {
@@ -41,9 +42,9 @@ namespace _2opt.NET
                         continue;
                     }
 
-                    if (Utility.LineSegementsIntersect(Lines[i].Points[0], Lines[i].Points[1], Lines[j].Points[0], Lines[j].Points[1]))
+                    if (Utility.LineSegementsIntersect(lines[i].Points[0], lines[i].Points[1], lines[j].Points[0], lines[j].Points[1]))
                     {
-                        var intersectingPair = new Tuple<Line, Line>(Lines[i], Lines[j]);
+                        var intersectingPair = new Tuple<Line, Line>(lines[i], lines[j]);
                         intersectingLines.Add(intersectingPair);
                     }
                 }
@@ -88,6 +89,21 @@ namespace _2opt.NET
 
         private static void Main(string[] args)
         {
+            if (args != null && args.Length > 0 && args[0] == "--dataset")
+            {
+                File.Delete(@"polys.txt");
+
+                for (int i = 0; i < 100; i++){
+                    var points = GetRandomizedPoints(100, 100,100);
+                    var lines = GetLinesFromPoints(points);
+                    var intersections = GetIntersectingLines(lines);
+
+                    File.AppendAllText(@"polys.txt", Utility.GetSQL(GetRandomizedPoints(50, 100, 100)).Split('\'')[1] + "; " + lines.Count + "; " + intersections.Count + "\r\n");
+                }
+
+                return; 
+            }
+
             ParseArgs(args);
 
             Points = GetRandomizedPoints(pointCount, xLim, yLim);
